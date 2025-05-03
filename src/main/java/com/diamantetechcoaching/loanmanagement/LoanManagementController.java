@@ -35,12 +35,12 @@ public class LoanManagementController {
         }
 
         LoanApplicationResponse response = new LoanApplicationResponse(
-            status,
-            credit,
-            income,
-            debt,
-            loanAmount,
-            dti
+                status,
+                credit,
+                income,
+                debt,
+                loanAmount,
+                dti
         );
 
         applications.add(response);
@@ -48,15 +48,10 @@ public class LoanManagementController {
     }
 
     private int fetchCreditScore(String ssn) {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            CreditScoreRequest creditScoreRequest = new CreditScoreRequest(ssn);
-            ResponseEntity<CreditScoreResponse> creditScoreResponse = restTemplate.postForEntity("http://localhost:8080/creditscore", creditScoreRequest, CreditScoreResponse.class);
-            return creditScoreResponse.getBody().getCreditScore();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0; // fail closed
-        }
+        RestTemplate restTemplate = new RestTemplate();
+        CreditScoreRequest creditScoreRequest = new CreditScoreRequest(ssn);
+        ResponseEntity<CreditScoreResponse> creditScoreResponse = restTemplate.postForEntity("http://localhost:8080/creditscore", creditScoreRequest, CreditScoreResponse.class);
+        return creditScoreResponse.getBody().getCreditScore();
     }
 
     @GetMapping("/all")
