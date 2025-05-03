@@ -2,11 +2,6 @@
 
 ## Feature: Auto-reject loan application
 
-### Scenario: Credit score is below 600
-Given the applicant has a credit score lower than 600
-When the loan application is processed
-Then the application status should be set to "Rejected"
-
 ### Scenario: Debt-to-income ratio is over 50%
 Given the applicant has a DTI greater than 50%
 When the loan application is processed
@@ -28,9 +23,7 @@ And required supporting documentation is not provided
 When the loan application is processed
 Then the application status should be set to "Rejected"
 
-
-
-## Feature: Flag application for manual review
+## 🚀 New Feature: Flag application for manual review
 
 ### Scenario: Credit score is between 600 and 749
 Given the applicant has a credit score between 600 and 749
