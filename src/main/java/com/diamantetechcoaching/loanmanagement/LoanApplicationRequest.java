@@ -1,7 +1,6 @@
 package com.diamantetechcoaching.loanmanagement;
 
 public class LoanApplicationRequest {
-    private int creditScore;
     private double monthlyIncome;
     private double monthlyDebt;
     private double requestedAmount;
@@ -11,19 +10,11 @@ public class LoanApplicationRequest {
     public LoanApplicationRequest() {
     }
 
-    public LoanApplicationRequest(int creditScore, double monthlyIncome, double monthlyDebt, double requestedAmount) {
-        this.creditScore = creditScore;
+    public LoanApplicationRequest(String ssn, double monthlyIncome, double monthlyDebt, double requestedAmount) {
+        this.ssn = ssn;
         this.monthlyIncome = monthlyIncome;
         this.monthlyDebt = monthlyDebt;
         this.requestedAmount = requestedAmount;
-    }
-
-    public int getCreditScore() {
-        return creditScore;
-    }
-
-    public void setCreditScore(int creditScore) {
-        this.creditScore = creditScore;
     }
 
     public double getMonthlyIncome() {

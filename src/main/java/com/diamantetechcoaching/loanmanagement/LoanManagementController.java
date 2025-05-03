@@ -1,48 +1,21 @@
 package com.diamantetechcoaching.loanmanagement;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/loan")
 public class LoanManagementController {
 
-    private static final List<LoanApplicationResponse> applications = new ArrayList<>();
+    @Autowired
+    private LoanApplicationService loanApplicationService;
 
     @PostMapping("/apply")
-    public LoanApplicationResponse applyForLoan(@RequestBody LoanApplicationRequest request) {
-        String ssn = request.getSSN();
-        int credit = AlmanacService.fetchCreditScore(ssn);
-        double income = request.getMonthlyIncome();
-        double debt = request.getMonthlyDebt();
-        double loanAmount = request.getRequestedAmount();
-
-        double dti = (debt / income) * 100;
-        boolean creditOk = credit >= 750;
-        boolean dtiOk = dti <= 35;
-        boolean amountOk = loanAmount <= income * 4;
-
-        String status = "Rejected";
-        if (creditOk && dtiOk && amountOk) {
-            status = "Approved";
-        }
-
-        LoanApplicationResponse response = new LoanApplicationResponse(
-                status,
-                credit,
-                income,
-                debt,
-                loanAmount,
-                dti
-        );
-
-        applications.add(response);
-        return response;
-    }
-
-    @GetMapping("/all")
-    public List<LoanApplicationResponse> getAllApplications() {
-        return applications;
+    public ResponseEntity<LoanApplicationResponse> applyForLoan(@RequestBody LoanApplicationRequest request) {
+        return ResponseEntity.ok(loanApplicationService.processLoanApplication(request));
     }
 }
