@@ -1,6 +1,13 @@
 package com.diamantetechcoaching.loanmanagement;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 
 @RestController
@@ -11,7 +18,8 @@ public class LoanManagementController {
 
     @PostMapping("/apply")
     public LoanApplicationResponse applyForLoan(@RequestBody LoanApplicationRequest request) {
-        int credit = request.getCreditScore();
+        String ssn = request.getSSN();
+        int credit = fetchCreditScore(ssn);
         double income = request.getMonthlyIncome();
         double debt = request.getMonthlyDebt();
         double loanAmount = request.getRequestedAmount();
@@ -37,6 +45,18 @@ public class LoanManagementController {
 
         applications.add(response);
         return response;
+    }
+
+    private int fetchCreditScore(String ssn) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            CreditScoreRequest creditScoreRequest = new CreditScoreRequest(ssn);
+            ResponseEntity<CreditScoreResponse> creditScoreResponse = restTemplate.postForEntity("http://localhost:8080/creditscore", creditScoreRequest, CreditScoreResponse.class);
+            return creditScoreResponse.getBody().getCreditScore();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0; // fail closed
+        }
     }
 
     @GetMapping("/all")

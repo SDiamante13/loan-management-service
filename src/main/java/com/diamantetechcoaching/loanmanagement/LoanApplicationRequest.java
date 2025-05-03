@@ -5,6 +5,7 @@ public class LoanApplicationRequest {
     private double monthlyIncome;
     private double monthlyDebt;
     private double requestedAmount;
+    private String ssn;
 
     // Default constructor for deserialization
     public LoanApplicationRequest() {
@@ -47,6 +48,14 @@ public class LoanApplicationRequest {
 
     public void setRequestedAmount(double requestedAmount) {
         this.requestedAmount = requestedAmount;
+    }
+
+    public String getSSN() {
+        return ssn;
+    }
+
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
     }
 }
 

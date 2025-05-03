@@ -5,7 +5,7 @@
 curl -X POST http://localhost:8080/loan/apply \
   -H "Content-Type: application/json" \
   -d '{
-    "creditScore": 760,
+    "ssn": "123",
     "monthlyIncome": 5000,
     "monthlyDebt": 1500,
     "requestedAmount": 18000
@@ -18,7 +18,7 @@ curl -X POST http://localhost:8080/loan/apply \
 curl -X POST http://localhost:8080/loan/apply \
   -H "Content-Type: application/json" \
   -d '{
-    "creditScore": 700,
+    "ssn": "999",
     "monthlyIncome": 5000,
     "monthlyDebt": 1500,
     "requestedAmount": 18000
