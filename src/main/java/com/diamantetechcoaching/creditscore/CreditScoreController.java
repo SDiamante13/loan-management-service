@@ -21,8 +21,7 @@ public class CreditScoreController {
             return ResponseEntity.ok(CreditScoreResponse.withCreditScore(750));
         } else if (creditScoreRequest.getSsn().equals("999")) {
             return ResponseEntity.ok(CreditScoreResponse.withCreditScore(700));
-        }
-        else {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }

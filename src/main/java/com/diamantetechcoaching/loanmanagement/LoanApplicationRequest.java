@@ -1,20 +1,40 @@
 package com.diamantetechcoaching.loanmanagement;
 
 public class LoanApplicationRequest {
+
+    private String firstName;
+    private String lastName;
     private double monthlyIncome;
     private double monthlyDebt;
     private double requestedAmount;
     private String ssn;
 
-    // Default constructor for deserialization
     public LoanApplicationRequest() {
     }
 
-    public LoanApplicationRequest(String ssn, double monthlyIncome, double monthlyDebt, double requestedAmount) {
-        this.ssn = ssn;
+    public LoanApplicationRequest(String firstName, String lastName, double monthlyIncome, double monthlyDebt, double requestedAmount, String ssn) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.monthlyIncome = monthlyIncome;
         this.monthlyDebt = monthlyDebt;
         this.requestedAmount = requestedAmount;
+        this.ssn = ssn;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public double getMonthlyIncome() {
@@ -41,7 +61,7 @@ public class LoanApplicationRequest {
         this.requestedAmount = requestedAmount;
     }
 
-    public String getSSN() {
+    public String getSsn() {
         return ssn;
     }
 
