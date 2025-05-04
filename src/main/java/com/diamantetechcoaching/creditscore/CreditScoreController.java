@@ -13,8 +13,8 @@ public class CreditScoreController {
     @PostMapping("/creditscore")
     public ResponseEntity<CreditScoreResponse> creditScore(@RequestBody CreditScoreRequest creditScoreRequest) {
         Random random = new Random();
-        int randomNumber = random.nextInt(10);
-        if (randomNumber % 2 == 0) {
+        int randomNumber = random.nextInt(4);
+        if (randomNumber == 0) {
             return ResponseEntity.internalServerError().build();
         }
         if (creditScoreRequest.getSsn().equals("123")) {

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${companyName} + ' - Loan Application'">Legacy Financial - Loan Application</title>
+    <link rel="stylesheet" th:href="@{/css/loan-application.css}">
+    <meta name="description" content="Apply for a loan with Legacy Financial - quick and easy application process.">
+
+</head>
+<body>
+    <div class="header">
+        <h1 th:text="${companyName}">Legacy Financial</h1>
+        <p>Loan Application Form</p>
+    </div>
+
+    <form th:action="@{/ui/loan/submit}" th:object="${loanApplication}" method="post">
+        <div class="form-group">
+            <label for="firstName" class="required">First Name</label>
+            <input type="text" id="firstName" th:field="*{firstName}" required>
+            <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="lastName" class="required">Last Name</label>
+            <input type="text" id="lastName" th:field="*{lastName}" required>
+            <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="ssn" class="required">Social Security Number</label>
+            <input type="text" id="ssn" th:field="*{ssn}" placeholder="123-45-6789" required>
+            <div class="error" th:if="${#fields.hasErrors('ssn')}" th:errors="*{ssn}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="monthlyIncome" class="required">Monthly Income (USD)</label>
+            <input type="number" id="monthlyIncome" th:field="*{monthlyIncome}" min="0" step="0.01" required>
+            <div class="error" th:if="${#fields.hasErrors('monthlyIncome')}" th:errors="*{monthlyIncome}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="monthlyDebt" class="required">Monthly Debt (USD)</label>
+            <input type="number" id="monthlyDebt" th:field="*{monthlyDebt}" min="0" step="0.01" required>
+            <div class="error" th:if="${#fields.hasErrors('monthlyDebt')}" th:errors="*{monthlyDebt}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="requestedAmount" class="required">Requested Loan Amount (USD)</label>
+            <input type="number" id="requestedAmount" th:field="*{requestedAmount}" min="0" step="0.01" required>
+            <div class="error" th:if="${#fields.hasErrors('requestedAmount')}" th:errors="*{requestedAmount}"></div>
+        </div>
+
+        <button type="submit">Submit Application</button>
+    </form>
+
+    <div class="footer">
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> <span th:text="${companyName}">Legacy Financial</span>. All rights reserved.</p>
+    </div>
+</body>
+</html>

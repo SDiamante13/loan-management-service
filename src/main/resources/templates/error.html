@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${companyName} + ' - Error'">Legacy Financial - Error</title>
+    <link rel="stylesheet" th:href="@{/css/loan-application.css}">
+    <meta name="description" content="Error page for Legacy Financial loan application.">
+</head>
+<body>
+    <div class="header">
+        <h1 th:text="${companyName}">Legacy Financial</h1>
+        <p>Application Error</p>
+    </div>
+
+    <div class="result-container">
+        <div class="rejected">
+            <div class="result-message">We're sorry, but an error occurred.</div>
+        </div>
+
+        <div class="details">
+            <h3>Error Details</h3>
+            <div class="detail-row" th:if="${error}">
+                <span class="detail-label">Message:</span>
+                <span th:text="${error}">Error message will appear here</span>
+            </div>
+        </div>
+
+        <a href="/ui/loan/apply" class="button">Return to Application Form</a>
+    </div>
+
+    <div class="footer">
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> <span th:text="${companyName}">Legacy Financial</span>. All rights reserved.</p>
+    </div>
+</body>
+</html>

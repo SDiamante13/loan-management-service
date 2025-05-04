@@ -9,8 +9,7 @@ Form Fields (all fields required):
 
 - First Name 
 - Last Name 
-- Email Address 
-- Credit Score Number 
+- Social Security Number
 - Monthly Income (USD)   
 - Monthly Debt (USD)    
 - Requested Loan Amount
@@ -27,8 +26,7 @@ Example JSON payload:
 {
   "firstName": "Alex",
   "lastName": "Johnson",
-  "email": "alex.johnson@example.com",
-  "creditScore": 780,
+  "ssn": "123-45-6789",
   "monthlyIncome": 6000,
   "monthlyDebt": 1800,
   "requestedAmount": 20000
@@ -49,3 +47,10 @@ The backend returns a JSON object with the loan status:
   "dti": 30.0
 }
 ```
+
+After the response is recieved the UI should display the approval status.
+
+Either: 
+  "Congratulations! Your loan application has been approved."
+  OR
+  "Sorry, your loan application has been rejected."

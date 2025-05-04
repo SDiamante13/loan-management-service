@@ -1,0 +1,11 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: legacy-financial-ui
+  thymeleaf:
+    cache: false
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
+backend:api:url: http://localhost:8080

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${companyName} + ' - Loan Application Result'">Legacy Financial - Loan Application Result</title>
+    <link rel="stylesheet" th:href="@{/css/loan-application.css}">
+    <meta name="description" content="View your loan application result from Legacy Financial.">
+
+</head>
+<body>
+    <div class="header">
+        <h1 th:text="${companyName}">Legacy Financial</h1>
+        <p>Loan Application Result</p>
+    </div>
+
+    <div class="result-container">
+        <div th:if="${approved}" class="approved">
+            <div class="result-message">Congratulations! Your loan application has been approved.</div>
+        </div>
+        <div th:unless="${approved}" class="rejected">
+            <div class="result-message">Sorry, your loan application has been rejected.</div>
+        </div>
+
+        <div class="details">
+            <h3>Application Details</h3>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span th:text="${response.status}">Approved</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Credit Score:</span>
+                <span th:text="${response.creditScore}">750</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Monthly Income:</span>
+                <span th:text="'$' + ${#numbers.formatDecimal(response.monthlyIncome, 1, 2)}">$6,000.00</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Monthly Debt:</span>
+                <span th:text="'$' + ${#numbers.formatDecimal(response.monthlyDebt, 1, 2)}">$1,800.00</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Requested Amount:</span>
+                <span th:text="'$' + ${#numbers.formatDecimal(response.requestedAmount, 1, 2)}">$20,000.00</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Debt-to-Income Ratio:</span>
+                <span th:text="${#numbers.formatDecimal(response.dti, 1, 1)} + '%'">30.0%</span>
+            </div>
+        </div>
+
+        <a href="/ui/loan/apply" class="button">Submit Another Application</a>
+    </div>
+
+    <div class="footer">
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> <span th:text="${companyName}">Legacy Financial</span>. All rights reserved.</p>
+    </div>
+</body>
+</html>
