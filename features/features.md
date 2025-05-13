@@ -49,4 +49,9 @@ And does not meet criteria for auto-approval or auto-rejection
 When the loan application is processed
 Then the application status should be set to "Needs Manual Review"
 
+## Feature: Reasoning for not being auto-approved 
 
+### Scenario: Provide Reason for not being auto-approved
+Given the applicant does not meet criteria for auto-approval
+When the loan application is processed
+Then the reason(s) should be detailed for the user
