@@ -11,4 +11,8 @@ record CreditScore(int value) {
     boolean isApproved() {
         return value >= 750;
     }
+
+    public boolean needsReview() {
+        return value >= 600 && value < 750;
+    }
 }

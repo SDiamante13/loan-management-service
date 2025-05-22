@@ -22,6 +22,12 @@ class CreditScoreTest {
     }
 
     @Test
+    void needsManualReview() {
+        assertThat(new CreditScore(600).needsReview()).isTrue();
+        assertThat(new CreditScore(749).needsReview()).isTrue();
+    }
+
+    @Test
     void invalidCreditScore() {
         assertThatThrownBy(() -> new CreditScore(299))
                 .isInstanceOf(IllegalArgumentException.class);

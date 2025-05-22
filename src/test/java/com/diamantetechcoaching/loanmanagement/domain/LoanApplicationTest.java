@@ -11,7 +11,7 @@ class LoanApplicationTest {
         LoanApplication lowCreditScore = new LoanApplication(
                 "first",
                 "last",
-                new CreditScore(700),
+                new CreditScore(599),
                 5_000,
                 1_500,
                 18_000,
@@ -39,6 +39,21 @@ class LoanApplicationTest {
         assertThat(lowCreditScore.determineLoanStatus()).isEqualTo(LoanStatus.REJECTED);
         assertThat(highDebtToIncomeRatio.determineLoanStatus()).isEqualTo(LoanStatus.REJECTED);
         assertThat(loanAmountTooHigh.determineLoanStatus()).isEqualTo(LoanStatus.REJECTED);
+    }
+
+    @Test
+    void manualReviewLoans() {
+        LoanApplication needsManualReviewLoan = new LoanApplication(
+                "Bruce",
+                "Banner",
+                new CreditScore(601),
+                5_000,
+                1_500,
+                18_000,
+                "999"
+        );
+
+        assertThat(needsManualReviewLoan.determineLoanStatus()).isEqualTo(LoanStatus.NEEDS_MANUAL_REVIEW);
     }
 
     @Test

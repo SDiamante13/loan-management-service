@@ -24,6 +24,14 @@ class DebtToIncomeRatioTest {
     }
 
     @Test
+    void needsManualReview() {
+        DebtToIncomeRatio debtToIncomeRatio = new DebtToIncomeRatio(40000, 114000);
+
+        assertThat(debtToIncomeRatio.value()).isGreaterThan(35);
+        assertThat(debtToIncomeRatio.isApproved()).isFalse();
+    }
+
+    @Test
     void invalidDebtToIncomeRatio() {
         assertThatThrownBy(() -> new DebtToIncomeRatio(-1.0, -1.0))
                 .isInstanceOf(IllegalArgumentException.class);
