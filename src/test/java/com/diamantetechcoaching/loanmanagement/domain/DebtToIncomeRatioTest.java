@@ -25,10 +25,10 @@ class DebtToIncomeRatioTest {
 
     @Test
     void needsManualReview() {
-        DebtToIncomeRatio debtToIncomeRatio = new DebtToIncomeRatio(40000, 114000);
+        DebtToIncomeRatio debtToIncomeRatio = new DebtToIncomeRatio(50000, 114000);
 
-        assertThat(debtToIncomeRatio.value()).isGreaterThan(35);
-        assertThat(debtToIncomeRatio.isApproved()).isFalse();
+        assertThat(debtToIncomeRatio.value()).isBetween(36.0, 50.0);
+        assertThat(debtToIncomeRatio.needsReview()).isTrue();
     }
 
     @Test

@@ -15,4 +15,8 @@ record DebtToIncomeRatio(double monthlyDebt, double monthlyIncome) {
     double value() {
         return (monthlyDebt / monthlyIncome) * 100;
     }
+
+    public boolean needsReview() {
+        return value() >= 36.0 && value() <= 50;
+    }
 }

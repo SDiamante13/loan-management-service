@@ -24,6 +24,14 @@ class LoanToIncomeRatioTest {
     }
 
     @Test
+    void needsManualReview() {
+        LoanToIncomeRatio loanToIncomeRatio = new LoanToIncomeRatio(130000, 30000);
+
+        assertThat(loanToIncomeRatio.value()).isStrictlyBetween(4.01, 10.01);
+        assertThat(loanToIncomeRatio.needsManualReview()).isTrue();
+    }
+
+    @Test
     void invalidLoanToIncomeRatio() {
         assertThatThrownBy(() -> new LoanToIncomeRatio(-1.0, -1.0))
                 .isInstanceOf(IllegalArgumentException.class);
