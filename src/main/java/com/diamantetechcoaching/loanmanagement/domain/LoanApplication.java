@@ -7,29 +7,30 @@ import com.diamantetechcoaching.loanmanagement.entity.LoanEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record LoanApplication(String firstName, String lastName, int creditScore, double monthlyIncome, double monthlyDebt,
-                       double requestedAmount, String socialSecurityNumber) {
+public record LoanApplication(String firstName, String lastName, CreditScore creditScore, double monthlyIncome, double monthlyDebt,
+                              double requestedAmount, String socialSecurityNumber) {
 
     public LoanStatus determineLoanStatus() {
-        if (creditScore() >= 750 && calculateDebtToIncomeRatio() <= 35 && requestedAmount() <= monthlyIncome() * 4) {
+        LoanToIncomeRatio loanToIncomeRatio = new LoanToIncomeRatio(requestedAmount, monthlyIncome);
+        if (creditScore.isApproved() && debtToIncomeRatio().isApproved() && loanToIncomeRatio.isApproved()) {
             return LoanStatus.APPROVED;
         }
         return LoanStatus.REJECTED;
     }
 
-    private double calculateDebtToIncomeRatio() {
-        return (monthlyDebt() / monthlyIncome()) * 100;
+    private DebtToIncomeRatio debtToIncomeRatio() {
+        return new DebtToIncomeRatio(monthlyDebt, monthlyIncome);
     }
 
     public LoanEntity toLoanEntity(LoanStatus loanStatus) {
         LoanEntity entity = new LoanEntity();
         entity.setFirstName(firstName());
         entity.setLastName(lastName());
-        entity.setCreditScore(creditScore());
+        entity.setCreditScore(creditScore.value());
         entity.setMonthlyIncome(BigDecimal.valueOf(monthlyIncome()));
         entity.setMonthlyDebt(BigDecimal.valueOf(monthlyDebt()));
         entity.setRequestedAmount(BigDecimal.valueOf(requestedAmount()));
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(calculateDebtToIncomeRatio()));
+        entity.setDebtToIncomeRatio(BigDecimal.valueOf(debtToIncomeRatio().value()));
         entity.setApplicationStatus(loanStatus.status());
         entity.setSubmissionTimestamp(LocalDateTime.now());
         return entity;
@@ -38,7 +39,7 @@ public record LoanApplication(String firstName, String lastName, int creditScore
     public static LoanApplication of(LoanApplicationRequest request, int creditScore) {
         return new LoanApplication(request.getFirstName(),
                 request.getLastName(),
-                creditScore,
+                new CreditScore(creditScore),
                 request.getMonthlyIncome(),
                 request.getMonthlyDebt(),
                 request.getRequestedAmount(),
@@ -48,11 +49,11 @@ public record LoanApplication(String firstName, String lastName, int creditScore
     public LoanApplicationResponse toLoanApplicationResponse(LoanStatus loanStatus) {
         return new LoanApplicationResponse(
                 loanStatus.status(),
-                creditScore(),
+                creditScore().value(),
                 monthlyIncome(),
                 monthlyDebt(),
                 requestedAmount(),
-                calculateDebtToIncomeRatio()
+                debtToIncomeRatio().value()
         );
     }
 }
