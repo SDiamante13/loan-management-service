@@ -1,5 +1,7 @@
 package com.diamantetechcoaching.loanmanagement;
 
+import com.diamantetechcoaching.loanmanagement.domain.LoanApplication;
+import com.diamantetechcoaching.loanmanagement.domain.LoanStatus;
 import com.diamantetechcoaching.loanmanagement.entity.LoanEntity;
 import com.diamantetechcoaching.loanmanagement.repository.LoanApplicationRepository;
 import org.slf4j.Logger;
@@ -36,7 +38,7 @@ public class LoanApplicationService {
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveAction) {
         LoanApplication loanApplication = LoanApplication.of(request, credit);
 
-        String loanStatus = loanApplication.determineLoanStatus();
+        LoanStatus loanStatus = loanApplication.determineLoanStatus();
 
         LoanEntity entity = loanApplication.toLoanEntity(loanStatus);
         saveAction.accept(entity);
