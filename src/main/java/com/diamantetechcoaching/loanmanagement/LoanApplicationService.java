@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.function.Consumer;
 
 @Service
 public class LoanApplicationService {
@@ -17,6 +18,18 @@ public class LoanApplicationService {
     public LoanApplicationResponse processLoanApplication(LoanApplicationRequest request) {
         String ssn = request.getSsn();
         int credit = AlmanacService.fetchCreditScore(ssn);
+
+        return processLoanApplication(request, credit, entity1 -> {
+            try {
+                loanApplicationRepository.save(entity1);
+            } catch (Exception e) {
+                System.err.println("Failed to persist loan application: " + e.getMessage());
+                throw new RuntimeException("Database error", e);
+            }
+        });
+    }
+
+    LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveAction) {
         String firstName = request.getFirstName();
         String lastName = request.getLastName();
         double income = request.getMonthlyIncome();
@@ -48,12 +61,7 @@ public class LoanApplicationService {
         entity.setDebtToIncomeRatio(BigDecimal.valueOf(dti));
         entity.setApplicationStatus(status);
         entity.setSubmissionTimestamp(LocalDateTime.now());
-        try {
-            loanApplicationRepository.save(entity);
-        } catch (Exception e) {
-            System.err.println("Failed to persist loan application: " + e.getMessage());
-            throw new RuntimeException("Database error", e);
-        }
+        saveAction.accept(entity);
         return response;
     }
 }

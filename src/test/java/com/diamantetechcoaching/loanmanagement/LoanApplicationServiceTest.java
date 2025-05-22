@@ -22,7 +22,7 @@ class LoanApplicationServiceTest {
                 30000,
                 "123");
 
-        LoanApplicationResponse response = loanApplicationService.processLoanApplication(request);
+        LoanApplicationResponse response = loanApplicationService.processLoanApplication(request, 750, entity1 -> {});
 
         assertThat(response.getStatus()).isEqualTo("Approved");
     }
