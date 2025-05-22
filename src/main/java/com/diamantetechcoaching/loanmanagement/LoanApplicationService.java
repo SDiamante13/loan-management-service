@@ -35,18 +35,35 @@ public class LoanApplicationService {
         });
     }
 
+    private record LoanApplication(String firstName, String lastName, int creditScore, double monthlyIncome, double monthlyDebt,
+                                   double requestedAmount, String socialSecurityNumber) {
+
+        public static LoanApplication of(LoanApplicationRequest request, int creditScore) {
+                return new LoanApplication(request.getFirstName(),
+                        request.getLastName(),
+                        creditScore,
+                        request.getMonthlyIncome(),
+                        request.getMonthlyDebt(),
+                        request.getRequestedAmount(),
+                        request.getSsn());
+            }
+        }
+
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveAction) {
+        LoanApplication loanApplication = LoanApplication.of(request, credit);
+
         String loanStatus = "Rejected";
-        if (meetsLoanAutoApprovalRequirements(request, credit)) {
+        if (credit >= 750 && calculateDebtToIncomeRatio(loanApplication) <= 35 && loanApplication.requestedAmount() <= loanApplication.monthlyIncome() * 4) {
             loanStatus = "Approved";
         }
+
         LoanApplicationResponse response = new LoanApplicationResponse(
                 loanStatus,
                 credit,
                 request.getMonthlyIncome(),
                 request.getMonthlyDebt(),
                 request.getRequestedAmount(),
-                calculateDebtToIncomeRatio(request)
+                calculateDebtToIncomeRatio(loanApplication)
         );
         LoanEntity entity = new LoanEntity();
         entity.setFirstName(request.getFirstName());
@@ -55,18 +72,14 @@ public class LoanApplicationService {
         entity.setMonthlyIncome(BigDecimal.valueOf(request.getMonthlyIncome()));
         entity.setMonthlyDebt(BigDecimal.valueOf(request.getMonthlyDebt()));
         entity.setRequestedAmount(BigDecimal.valueOf(request.getRequestedAmount()));
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(calculateDebtToIncomeRatio(request)));
+        entity.setDebtToIncomeRatio(BigDecimal.valueOf(calculateDebtToIncomeRatio(loanApplication)));
         entity.setApplicationStatus(loanStatus);
         entity.setSubmissionTimestamp(LocalDateTime.now());
         saveAction.accept(entity);
         return response;
     }
 
-    private static boolean meetsLoanAutoApprovalRequirements(LoanApplicationRequest request, int credit) {
-        return credit >= 750 && calculateDebtToIncomeRatio(request) <= 35 && request.getRequestedAmount() <= request.getMonthlyIncome() * 4;
-    }
-
-    private static double calculateDebtToIncomeRatio(LoanApplicationRequest request) {
-        return (request.getMonthlyDebt() / request.getMonthlyIncome()) * 100;
+    private static double calculateDebtToIncomeRatio(LoanApplication loanApplication) {
+        return (loanApplication.monthlyDebt() / loanApplication.monthlyIncome()) * 100;
     }
 }
