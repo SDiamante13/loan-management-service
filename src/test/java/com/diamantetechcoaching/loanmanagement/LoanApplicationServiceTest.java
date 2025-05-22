@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 class LoanApplicationServiceTest {
 
-    private final LoanApplicationService loanApplicationService = new LoanApplicationService();
+    private final LoanApplicationService loanApplicationService = new LoanApplicationService(null);
 
     @Test
     void rejectedLoans() {

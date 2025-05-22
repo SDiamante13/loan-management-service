@@ -2,7 +2,8 @@ package com.diamantetechcoaching.loanmanagement;
 
 import com.diamantetechcoaching.loanmanagement.entity.LoanEntity;
 import com.diamantetechcoaching.loanmanagement.repository.LoanApplicationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,8 +13,13 @@ import java.util.function.Consumer;
 @Service
 public class LoanApplicationService {
 
-    @Autowired
-    private LoanApplicationRepository loanApplicationRepository;
+    private static final Logger log = LoggerFactory.getLogger(LoanApplicationService.class);
+
+    private final LoanApplicationRepository loanApplicationRepository;
+
+    public LoanApplicationService(LoanApplicationRepository loanApplicationRepository) {
+        this.loanApplicationRepository = loanApplicationRepository;
+    }
 
     public LoanApplicationResponse processLoanApplication(LoanApplicationRequest request) {
         String ssn = request.getSsn();
@@ -23,7 +29,7 @@ public class LoanApplicationService {
             try {
                 loanApplicationRepository.save(entity1);
             } catch (Exception e) {
-                System.err.println("Failed to persist loan application: " + e.getMessage());
+                log.error("Failed to persist loan application: {}", e.getMessage());
                 throw new RuntimeException("Database error", e);
             }
         });
