@@ -37,7 +37,7 @@ public class LoanApplicationService {
 
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveAction) {
         String loanStatus = "Rejected";
-        if (credit >= 750 && calculateDebtToIncomeRatio(request) <= 35 && request.getRequestedAmount() <= request.getMonthlyIncome() * 4) {
+        if (meetsLoanAutoApprovalRequirements(request, credit)) {
             loanStatus = "Approved";
         }
         LoanApplicationResponse response = new LoanApplicationResponse(
@@ -60,6 +60,10 @@ public class LoanApplicationService {
         entity.setSubmissionTimestamp(LocalDateTime.now());
         saveAction.accept(entity);
         return response;
+    }
+
+    private static boolean meetsLoanAutoApprovalRequirements(LoanApplicationRequest request, int credit) {
+        return credit >= 750 && calculateDebtToIncomeRatio(request) <= 35 && request.getRequestedAmount() <= request.getMonthlyIncome() * 4;
     }
 
     private static double calculateDebtToIncomeRatio(LoanApplicationRequest request) {
