@@ -2,14 +2,10 @@ package com.diamantetechcoaching.loanmanagement;
 
 import org.approvaltests.Approvals;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 class LoanApplicationServiceTest {
 
-    @Autowired
-    LoanApplicationService loanApplicationService;
+    private final LoanApplicationService loanApplicationService = new LoanApplicationService();
 
     @Test
     void rejectedLoans() {
