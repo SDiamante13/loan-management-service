@@ -36,10 +36,7 @@ public class LoanApplicationService {
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveAction) {
         LoanApplication loanApplication = LoanApplication.of(request, credit);
 
-        String loanStatus = "Rejected";
-        if (credit >= 750 && loanApplication.calculateDebtToIncomeRatio() <= 35 && loanApplication.requestedAmount() <= loanApplication.monthlyIncome() * 4) {
-            loanStatus = "Approved";
-        }
+        String loanStatus = loanApplication.determineLoanStatus();
 
         LoanEntity entity = loanApplication.toLoanEntity(loanStatus);
         saveAction.accept(entity);

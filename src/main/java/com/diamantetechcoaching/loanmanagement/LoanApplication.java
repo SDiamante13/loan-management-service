@@ -8,6 +8,17 @@ import java.time.LocalDateTime;
 record LoanApplication(String firstName, String lastName, int creditScore, double monthlyIncome, double monthlyDebt,
                        double requestedAmount, String socialSecurityNumber) {
 
+    String determineLoanStatus() {
+        if (creditScore() >= 750 && calculateDebtToIncomeRatio() <= 35 && requestedAmount() <= monthlyIncome() * 4) {
+           return "Approved";
+        }
+        return "Rejected";
+    }
+
+    double calculateDebtToIncomeRatio() {
+        return (monthlyDebt() / monthlyIncome()) * 100;
+    }
+
     LoanEntity toLoanEntity(String loanStatus) {
         LoanEntity entity = new LoanEntity();
         entity.setFirstName(firstName());
@@ -20,10 +31,6 @@ record LoanApplication(String firstName, String lastName, int creditScore, doubl
         entity.setApplicationStatus(loanStatus);
         entity.setSubmissionTimestamp(LocalDateTime.now());
         return entity;
-    }
-
-    double calculateDebtToIncomeRatio() {
-        return (monthlyDebt() / monthlyIncome()) * 100;
     }
 
     public static LoanApplication of(LoanApplicationRequest request, int creditScore) {
