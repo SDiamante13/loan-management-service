@@ -15,10 +15,13 @@
     </div>
 
     <div class="result-container">
-        <div th:if="${approved}" class="approved">
+        <div th:if="${status == 'Approved'}" class="approved">
             <div class="result-message">Congratulations! Your loan application has been approved.</div>
         </div>
-        <div th:unless="${approved}" class="rejected">
+        <div th:if="${status == 'Needs Manual Review'}" class="review">
+            <div class="result-message">Your loan application is under review. You'll be contacted shortly.</div>
+        </div>
+        <div th:if="${status == 'Rejected'}" class="rejected">
             <div class="result-message">Sorry, your loan application has been rejected.</div>
         </div>
 

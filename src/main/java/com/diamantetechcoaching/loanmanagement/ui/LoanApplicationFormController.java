@@ -86,6 +86,7 @@ public class LoanApplicationFormController {
                 
                 model.addAttribute("response", response);
                 model.addAttribute("approved", "Approved".equals(response.getStatus()));
+                model.addAttribute("status", response.getStatus());
             } else {
                 // Handle null response
                 model.addAttribute("error", "Unable to process your application at this time. Please try again later.");

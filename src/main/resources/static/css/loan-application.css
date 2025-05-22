@@ -7,6 +7,7 @@
   --primary-color: #2c3e50;
   --secondary-color: #3498db;
   --success-color: #27ae60;
+  --warning-color: #f1c40f;
   --danger-color: #e74c3c;
   --light-gray: #f9f9f9;
   --border-color: #eee;
@@ -110,6 +111,11 @@ button:hover {
 
 .approved {
   color: var(--success-color);
+  font-weight: bold;
+}
+
+.review {
+  color: var(--warning-color);
   font-weight: bold;
 }
 
