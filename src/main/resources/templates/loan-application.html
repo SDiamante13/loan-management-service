@@ -14,6 +14,11 @@
         <p>Loan Application Form</p>
     </div>
 
+    <!-- Show restored data notification -->
+    <div th:if="${dataRestored}" class="restored-data-notification">
+        <p>📋 Your previous form data has been restored. You can review and resubmit your application.</p>
+    </div>
+
     <form th:action="@{/ui/loan/submit}" th:object="${loanApplication}" method="post">
         <div class="form-group">
             <label for="firstName" class="required">First Name</label>

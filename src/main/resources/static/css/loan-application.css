@@ -169,3 +169,18 @@ button:hover {
 .button:hover {
   background-color: #2980b9;
 }
+
+/* Restored data notification styles */
+.restored-data-notification {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 20px;
+  color: #856404;
+  font-weight: 500;
+}
+
+.restored-data-notification p {
+  margin: 0;
+}
