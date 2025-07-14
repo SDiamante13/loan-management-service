@@ -1,126 +1,80 @@
 package com.diamantetechcoaching.loanmanagement;
 
-// Import statements for the loan management service
+
 import com.diamantetechcoaching.loanmanagement.entity.LoanEntity;
 import com.diamantetechcoaching.loanmanagement.repository.LoanApplicationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service; // This is for making this class a service
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal; // For handling big decimal numbers
-import java.time.LocalDateTime; // For timestamp handling
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
-/**
- * This is the LoanApplicationService class
- * It processes loan applications
- * Author: Developer
- * Date: Today
- * Version: 1.0
- */
-@Service // This annotation makes this class a Spring service bean
+@Service
 public class LoanApplicationService {
 
-    // Repository for loan applications
-    @Autowired // This injects the repository dependency
-    private LoanApplicationRepository loanApplicationRepository;
-    
-    // Dead code - unused method
-    // private String oldMethod() {
-    //     return "This method is not used anymore";
-    // }
-    
-    // Unused variable
-    private static final String UNUSED_CONSTANT = "This is never used";
+    private static final Logger log = LoggerFactory.getLogger(LoanApplicationService.class);
+    private final LoanApplicationRepository loanApplicationRepository;
 
-    /**
-     * This method processes loan applications
-     * It takes a request and returns a response
-     * @param request the loan application request
-     * @return the loan application response
-     */
+    public LoanApplicationService(LoanApplicationRepository loanApplicationRepository) {
+        this.loanApplicationRepository = loanApplicationRepository;
+    }
+
     public LoanApplicationResponse processLoanApplication(LoanApplicationRequest request) {
-        // Get the SSN from the request
-        String ssn = request.getSsn(); // Social Security Number
-        
-        // Fetch credit score using the SSN
-        int credit = AlmanacService.fetchCreditScore(ssn); // This calls an external service
+        String ssn = request.getSsn();
+        int credit = AlmanacService.fetchCreditScore(ssn);
 
         return processLoanApplication(request, credit, entity -> {
-            // Try to save to database
+
             try {
-                loanApplicationRepository.save(entity); // Save the entity
-            } catch (Exception e) { // Catch any exceptions
-                // Print error message to console
-                System.err.println("Failed to persist loan application: " + e.getMessage());
-                // Throw runtime exception
-                throw new RuntimeException("Database error", e); // Re-throw as runtime exception
+                loanApplicationRepository.save(entity);
+            } catch (Exception e) {
+                log.error("Failed to persist loan application: {}", e.getMessage());
+                throw new RuntimeException("Database error", e);
             }
         });
     }
 
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveAction) {
-        // Get first name from request
-        String firstName = request.getFirstName(); // Customer's first name
+        String firstName = request.getFirstName();
+        String lastName = request.getLastName();
+        double income = request.getMonthlyIncome();
+        double debt = request.getMonthlyDebt();
+        double loanAmount = request.getRequestedAmount();
+        double dti = (debt / income) * 100;
+        boolean creditOk = credit >= 750;
+        boolean dtiOk = dti <= 35;
+        boolean amountOk = loanAmount <= income * 4;
 
-        // Get last name from request
-        String lastName = request.getLastName(); // Customer's last name
+        String status = "Rejected";
 
-        // Get monthly income
-        double income = request.getMonthlyIncome(); // How much they make per month
-
-        // Get monthly debt
-        double debt = request.getMonthlyDebt(); // How much they owe per month
-
-        // Get requested loan amount
-        double loanAmount = request.getRequestedAmount(); // Amount they want to borrow
-
-        // Calculate debt to income ratio
-        double dti = (debt / income) * 100; // DTI calculation - very important!
-
-        // Check if credit score is good enough
-        boolean creditOk = credit >= 750; // 750 is our minimum credit score
-
-        // Check if DTI is acceptable
-        boolean dtiOk = dti <= 35; // 35% is our maximum DTI
-
-        // Check if loan amount is reasonable
-        boolean amountOk = loanAmount <= income * 4; // Can't be more than 4x annual income
-
-        // Set default status to rejected
-        String status = "Rejected"; // Default is rejected
-
-        // If all conditions are met, approve the loan
-        if (creditOk && dtiOk && amountOk) { // All three conditions must be true
-            status = "Approved"; // Change status to approved
+        if (creditOk && dtiOk && amountOk) {
+            status = "Approved";
         }
 
-        // Create the response object
-        LoanApplicationResponse response = new LoanApplicationResponse( // Constructor call
-                status, // The approval status
-                credit, // Credit score
-                income, // Monthly income
-                debt, // Monthly debt
-                loanAmount, // Requested amount
-                dti // Debt to income ratio
+        LoanApplicationResponse response = new LoanApplicationResponse(
+                status,
+                credit,
+                income,
+                debt,
+                loanAmount,
+                dti
         );
 
-        // Create entity for database persistence
-        LoanEntity entity = new LoanEntity(); // New entity instance
-
-        // Set all the entity fields
-        entity.setFirstName(firstName); // Set first name
-        entity.setLastName(lastName); // Set last name
-        entity.setCreditScore(credit); // Set credit score
-        entity.setMonthlyIncome(BigDecimal.valueOf(income)); // Convert to BigDecimal
-        entity.setMonthlyDebt(BigDecimal.valueOf(debt)); // Convert to BigDecimal
-        entity.setRequestedAmount(BigDecimal.valueOf(loanAmount)); // Convert to BigDecimal
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(dti)); // Convert to BigDecimal
-        entity.setApplicationStatus(status); // Set the status
-        entity.setSubmissionTimestamp(LocalDateTime.now()); // Set current timestamp
+        LoanEntity entity = new LoanEntity();
+        entity.setFirstName(firstName);
+        entity.setLastName(lastName);
+        entity.setCreditScore(credit);
+        entity.setMonthlyIncome(BigDecimal.valueOf(income));
+        entity.setMonthlyDebt(BigDecimal.valueOf(debt));
+        entity.setRequestedAmount(BigDecimal.valueOf(loanAmount));
+        entity.setDebtToIncomeRatio(BigDecimal.valueOf(dti));
+        entity.setApplicationStatus(status);
+        entity.setSubmissionTimestamp(LocalDateTime.now());
 
         saveAction.accept(entity);
 
-        // Return the response
         return response;
     }
 }
