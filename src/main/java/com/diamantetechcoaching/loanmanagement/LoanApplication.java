@@ -20,6 +20,19 @@ public record LoanApplication(String firstName, String lastName, double monthlyI
         );
     }
 
+    String determineLoanStatus(int creditScore) {
+        if (creditScore >= 750 &&
+                calculateDebtToIncomeRatio() <= 35 &&
+                requestedAmount() <= monthlyIncome() * 4) {
+            return "Approved";
+        }
+        return "Rejected";
+    }
+
+    double calculateDebtToIncomeRatio() {
+        return (monthlyDebt() / monthlyIncome()) * 100;
+    }
+
     LoanEntity toLoanEntity(int creditScore, String loanStatus) {
         LoanEntity entity = new LoanEntity();
         entity.setFirstName(firstName());
@@ -43,9 +56,5 @@ public record LoanApplication(String firstName, String lastName, double monthlyI
                 requestedAmount(),
                 calculateDebtToIncomeRatio()
         );
-    }
-
-    double calculateDebtToIncomeRatio() {
-        return (monthlyDebt() / monthlyIncome()) * 100;
     }
 }
