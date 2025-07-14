@@ -1,12 +1,14 @@
-package com.diamantetechcoaching.loanmanagement;
+package com.diamantetechcoaching.loanmanagement.domain;
 
+import com.diamantetechcoaching.loanmanagement.LoanApplicationRequest;
+import com.diamantetechcoaching.loanmanagement.LoanApplicationResponse;
 import com.diamantetechcoaching.loanmanagement.entity.LoanEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record LoanApplication(String firstName, String lastName, double monthlyIncome, double monthlyDebt,
-                              double requestedAmount, String ssn, int creditScore) {
+                              double requestedAmount, String ssn, CreditScore creditScore) {
 
     public static LoanApplication of(LoanApplicationRequest request, int creditScore) {
         return new LoanApplication(
@@ -16,24 +18,23 @@ public record LoanApplication(String firstName, String lastName, double monthlyI
                 request.getMonthlyDebt(),
                 request.getRequestedAmount(),
                 request.getSsn(),
-                creditScore
+                new CreditScore(creditScore)
         );
     }
 
-    LoanStatus determineLoanStatus(int creditScore) {
-        if (creditScore >= 750 &&
-                calculateDebtToIncomeRatio() <= 35 &&
-                requestedAmount() <= monthlyIncome() * 4) {
+    public LoanStatus determineLoanStatus() {
+        LoanToIncomeRatio loanToIncomeRatio = new LoanToIncomeRatio(requestedAmount, monthlyIncome);
+        if (creditScore.isApproved() && debtToIncomeRatio().isApproved() && loanToIncomeRatio.isApproved()) {
             return LoanStatus.APPROVED;
         }
         return LoanStatus.REJECTED;
     }
 
-    double calculateDebtToIncomeRatio() {
-        return (monthlyDebt() / monthlyIncome()) * 100;
+    private DebtToIncomeRatio debtToIncomeRatio() {
+        return new DebtToIncomeRatio(monthlyDebt, monthlyIncome);
     }
 
-    LoanEntity toLoanEntity(int creditScore, LoanStatus loanStatus) {
+    public LoanEntity toLoanEntity(int creditScore, LoanStatus loanStatus) {
         LoanEntity entity = new LoanEntity();
         entity.setFirstName(firstName());
         entity.setLastName(lastName());
@@ -41,20 +42,20 @@ public record LoanApplication(String firstName, String lastName, double monthlyI
         entity.setMonthlyIncome(BigDecimal.valueOf(monthlyIncome()));
         entity.setMonthlyDebt(BigDecimal.valueOf(monthlyDebt()));
         entity.setRequestedAmount(BigDecimal.valueOf(requestedAmount()));
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(calculateDebtToIncomeRatio()));
+        entity.setDebtToIncomeRatio(BigDecimal.valueOf(debtToIncomeRatio().value()));
         entity.setApplicationStatus(loanStatus.status());
         entity.setSubmissionTimestamp(LocalDateTime.now());
         return entity;
     }
 
-    LoanApplicationResponse toLoanApplicationResponse(int creditScore, LoanStatus loanStatus) {
+    public LoanApplicationResponse toLoanApplicationResponse(int creditScore, LoanStatus loanStatus) {
         return new LoanApplicationResponse(
                 loanStatus.status(),
                 creditScore,
                 monthlyIncome(),
                 monthlyDebt(),
                 requestedAmount(),
-                calculateDebtToIncomeRatio()
+                debtToIncomeRatio().value()
         );
     }
 }

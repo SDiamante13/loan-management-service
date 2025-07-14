@@ -1,4 +1,4 @@
-package com.diamantetechcoaching.loanmanagement;
+package com.diamantetechcoaching.loanmanagement.domain;
 
 public enum LoanStatus {
     APPROVED("Approved"),
