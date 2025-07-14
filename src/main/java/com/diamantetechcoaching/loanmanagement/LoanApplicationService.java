@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service; // This is for making this class 
 
 import java.math.BigDecimal; // For handling big decimal numbers
 import java.time.LocalDateTime; // For timestamp handling
+import java.util.function.Consumer;
 
 /**
  * This is the LoanApplicationService class
@@ -43,42 +44,56 @@ public class LoanApplicationService {
         
         // Fetch credit score using the SSN
         int credit = AlmanacService.fetchCreditScore(ssn); // This calls an external service
-        
+
+        return processLoanApplication(request, credit, entity -> {
+            // Try to save to database
+            try {
+                loanApplicationRepository.save(entity); // Save the entity
+            } catch (Exception e) { // Catch any exceptions
+                // Print error message to console
+                System.err.println("Failed to persist loan application: " + e.getMessage());
+                // Throw runtime exception
+                throw new RuntimeException("Database error", e); // Re-throw as runtime exception
+            }
+        });
+    }
+
+    LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveAction) {
         // Get first name from request
         String firstName = request.getFirstName(); // Customer's first name
-        
-        // Get last name from request  
+
+        // Get last name from request
         String lastName = request.getLastName(); // Customer's last name
-        
+
         // Get monthly income
         double income = request.getMonthlyIncome(); // How much they make per month
-        
+
         // Get monthly debt
         double debt = request.getMonthlyDebt(); // How much they owe per month
-        
+
         // Get requested loan amount
         double loanAmount = request.getRequestedAmount(); // Amount they want to borrow
-        
+
         // Calculate debt to income ratio
         double dti = (debt / income) * 100; // DTI calculation - very important!
-        
+
         // Check if credit score is good enough
         boolean creditOk = credit >= 750; // 750 is our minimum credit score
-        
+
         // Check if DTI is acceptable
         boolean dtiOk = dti <= 35; // 35% is our maximum DTI
-        
+
         // Check if loan amount is reasonable
         boolean amountOk = loanAmount <= income * 4; // Can't be more than 4x annual income
-        
+
         // Set default status to rejected
         String status = "Rejected"; // Default is rejected
-        
+
         // If all conditions are met, approve the loan
         if (creditOk && dtiOk && amountOk) { // All three conditions must be true
             status = "Approved"; // Change status to approved
         }
-        
+
         // Create the response object
         LoanApplicationResponse response = new LoanApplicationResponse( // Constructor call
                 status, // The approval status
@@ -88,10 +103,10 @@ public class LoanApplicationService {
                 loanAmount, // Requested amount
                 dti // Debt to income ratio
         );
-        
+
         // Create entity for database persistence
         LoanEntity entity = new LoanEntity(); // New entity instance
-        
+
         // Set all the entity fields
         entity.setFirstName(firstName); // Set first name
         entity.setLastName(lastName); // Set last name
@@ -102,18 +117,10 @@ public class LoanApplicationService {
         entity.setDebtToIncomeRatio(BigDecimal.valueOf(dti)); // Convert to BigDecimal
         entity.setApplicationStatus(status); // Set the status
         entity.setSubmissionTimestamp(LocalDateTime.now()); // Set current timestamp
-        
-        // Try to save to database
-        try {
-            loanApplicationRepository.save(entity); // Save the entity
-        } catch (Exception e) { // Catch any exceptions
-            // Print error message to console
-            System.err.println("Failed to persist loan application: " + e.getMessage());
-            // Throw runtime exception
-            throw new RuntimeException("Database error", e); // Re-throw as runtime exception
-        }
-        
+
+        saveAction.accept(entity);
+
         // Return the response
-        return response; // Send back the response object
+        return response;
     }
 }
