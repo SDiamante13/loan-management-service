@@ -2,7 +2,8 @@ package com.diamantetechcoaching.loanmanagement.domain;
 
 public enum LoanStatus {
     APPROVED("Approved"),
-    REJECTED("Rejected");
+    REJECTED("Rejected"),
+    NEEDS_MANUAL_REVIEW("Needs Manual Review");
 
     private final String status;
 
