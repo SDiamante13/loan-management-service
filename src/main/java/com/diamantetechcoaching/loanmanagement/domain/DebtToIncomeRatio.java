@@ -9,11 +9,15 @@ public record DebtToIncomeRatio(double monthlyDebt, double monthlyIncome) {
     }
 
     public boolean isApproved() {
-        return value() <= 35;
+        return value() < 36;
     }
 
     public double value() {
         return (monthlyDebt() / monthlyIncome()) * 100;
+    }
+
+    public boolean needsManualReview() {
+        return value() >= 36 && value() <= 50;
     }
 }
 

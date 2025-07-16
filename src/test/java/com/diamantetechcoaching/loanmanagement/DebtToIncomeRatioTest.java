@@ -12,16 +12,27 @@ class DebtToIncomeRatioTest {
     void isApproved() {
         DebtToIncomeRatio debtToIncomeRatio = new DebtToIncomeRatio(40000, 150000);
 
-        assertThat(debtToIncomeRatio.value()).isLessThanOrEqualTo(35);
+        assertThat(debtToIncomeRatio.value()).isLessThan(36);
         assertThat(debtToIncomeRatio.isApproved()).isTrue();
     }
 
     @Test
-    void isNotApproved() {
-        DebtToIncomeRatio debtToIncomeRatio = new DebtToIncomeRatio(40000, 114000);
+    void needsManualReview() {
+        DebtToIncomeRatio debtToIncomeRatio = new DebtToIncomeRatio(40000, 100000);
 
-        assertThat(debtToIncomeRatio.value()).isGreaterThan(35);
+        assertThat(debtToIncomeRatio.value())
+                .isBetween(36.0, 50.0);
+
+        assertThat(debtToIncomeRatio.needsManualReview()).isTrue();
+    }
+
+    @Test
+    void isNotApproved() {
+        DebtToIncomeRatio debtToIncomeRatio = new DebtToIncomeRatio(40000, 79000);
+
+        assertThat(debtToIncomeRatio.value()).isGreaterThan(50);
         assertThat(debtToIncomeRatio.isApproved()).isFalse();
+        assertThat(debtToIncomeRatio.needsManualReview()).isFalse();
     }
 
     @Test
