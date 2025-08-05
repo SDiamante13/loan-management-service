@@ -35,6 +35,18 @@ public class LoanEntity {
     public LoanEntity() {
     }
 
+    public LoanEntity(String firstName, String lastName, Integer creditScore, BigDecimal monthlyIncome, BigDecimal monthlyDebt, BigDecimal requestedAmount, BigDecimal debtToIncomeRatio, String applicationStatus, LocalDateTime submissionTimestamp) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.creditScore = creditScore;
+        this.monthlyIncome = monthlyIncome;
+        this.monthlyDebt = monthlyDebt;
+        this.requestedAmount = requestedAmount;
+        this.debtToIncomeRatio = debtToIncomeRatio;
+        this.applicationStatus = applicationStatus;
+        this.submissionTimestamp = submissionTimestamp;
+    }
+
     public Long getId() {
         return id;
     }
