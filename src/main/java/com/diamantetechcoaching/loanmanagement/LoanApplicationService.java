@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 @Service
@@ -35,37 +33,15 @@ public class LoanApplicationService {
 
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int creditScore, Consumer<LoanEntity> saveToDatabase) {
         LoanApplication loanApplication = LoanApplication.of(request, creditScore);
+
         String status = "Rejected";
-        if (creditScore >= 750 && calculateDebtToIncomeRatio(loanApplication) <= 35 && loanApplication.requestedAmount() <= loanApplication.monthlyIncome() * 4) {
+        if (creditScore >= 750 && loanApplication.calculateDebtToIncomeRatio() <= 35 && loanApplication.requestedAmount() <= loanApplication.monthlyIncome() * 4) {
             status = "Approved";
         }
 
-        LoanApplicationResponse response = new LoanApplicationResponse(
-                status,
-                creditScore,
-                loanApplication.monthlyIncome(),
-                loanApplication.monthlyDebt(),
-                loanApplication.requestedAmount(),
-                calculateDebtToIncomeRatio(loanApplication)
-        );
-
-        LoanEntity entity = new LoanEntity();
-        entity.setFirstName(loanApplication.firstName());
-        entity.setLastName(loanApplication.lastName());
-        entity.setCreditScore(creditScore);
-        entity.setMonthlyIncome(BigDecimal.valueOf(loanApplication.monthlyIncome()));
-        entity.setMonthlyDebt(BigDecimal.valueOf(loanApplication.monthlyDebt()));
-        entity.setRequestedAmount(BigDecimal.valueOf(loanApplication.requestedAmount()));
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(calculateDebtToIncomeRatio(loanApplication)));
-        entity.setApplicationStatus(status);
-        entity.setSubmissionTimestamp(LocalDateTime.now());
-
+        LoanApplicationResponse response = loanApplication.toLoanApplicationResponse(creditScore, status);
+        LoanEntity entity = loanApplication.toLoanEntity(creditScore, status);
         saveToDatabase.accept(entity);
-
         return response;
-    }
-
-    private static double calculateDebtToIncomeRatio(LoanApplication loanApplication) {
-        return (loanApplication.monthlyDebt() / loanApplication.monthlyIncome()) * 100;
     }
 }
