@@ -7,21 +7,21 @@ import com.diamantetechcoaching.loanmanagement.entity.LoanEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record LoanApplication(String firstName, String lastName, int creditScore, double monthlyIncome, double monthlyDebt,
-                       double requestedAmount, String ssn) {
+public record LoanApplication(String firstName, String lastName, CreditScore creditScore, double monthlyIncome, double monthlyDebt,
+                              double requestedAmount, String ssn) {
 
     public static LoanApplication of(LoanApplicationRequest request, int creditScore) {
         return new LoanApplication(request.getFirstName(),
                 request.getLastName(),
-                creditScore,
+                new CreditScore(creditScore),
                 request.getMonthlyIncome(),
                 request.getMonthlyDebt(),
                 request.getRequestedAmount(),
                 request.getSsn());
     }
 
-    public LoanStatus determineLoanStatus(int creditScore) {
-        if (creditScore >= 750 && calculateDebtToIncomeRatio() <= 35 && requestedAmount() <= monthlyIncome() * 4) {
+    public LoanStatus determineLoanStatus() {
+        if (creditScore.isApproved() && calculateDebtToIncomeRatio() <= 35 && requestedAmount() <= monthlyIncome() * 4) {
             return LoanStatus.APPROVED;
         }
         return LoanStatus.REJECTED;
@@ -30,7 +30,7 @@ public record LoanApplication(String firstName, String lastName, int creditScore
     public LoanApplicationResponse toLoanApplicationResponse(LoanStatus loanStatus) {
         return new LoanApplicationResponse(
                 loanStatus.status(),
-                creditScore(),
+                creditScore.value(),
                 monthlyIncome(),
                 monthlyDebt(),
                 requestedAmount(),
@@ -38,11 +38,11 @@ public record LoanApplication(String firstName, String lastName, int creditScore
         );
     }
 
-    public LoanEntity toLoanEntity(int creditScore, LoanStatus loanStatus) {
+    public LoanEntity toLoanEntity(LoanStatus loanStatus) {
         LoanEntity entity = new LoanEntity();
         entity.setFirstName(firstName());
         entity.setLastName(lastName());
-        entity.setCreditScore(creditScore);
+        entity.setCreditScore(creditScore().value());
         entity.setMonthlyIncome(BigDecimal.valueOf(monthlyIncome()));
         entity.setMonthlyDebt(BigDecimal.valueOf(monthlyDebt()));
         entity.setRequestedAmount(BigDecimal.valueOf(requestedAmount()));

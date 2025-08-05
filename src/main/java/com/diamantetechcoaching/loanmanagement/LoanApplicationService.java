@@ -35,8 +35,8 @@ public class LoanApplicationService {
 
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int creditScore, Consumer<LoanEntity> saveToDatabase) {
         LoanApplication loanApplication = LoanApplication.of(request, creditScore);
-        LoanStatus loanStatus = loanApplication.determineLoanStatus(creditScore);
-        LoanEntity entity = loanApplication.toLoanEntity(creditScore, loanStatus);
+        LoanStatus loanStatus = loanApplication.determineLoanStatus();
+        LoanEntity entity = loanApplication.toLoanEntity(loanStatus);
         saveToDatabase.accept(entity);
         return loanApplication.toLoanApplicationResponse(loanStatus);
     }
