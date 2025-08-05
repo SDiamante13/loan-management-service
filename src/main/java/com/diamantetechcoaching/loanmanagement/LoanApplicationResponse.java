@@ -69,5 +69,17 @@ public class LoanApplicationResponse {
     public void setDti(double dti) {
         this.dti = dti;
     }
+
+    @Override
+    public String toString() {
+        return "LoanApplicationResponse{" +
+                "status='" + status + '\'' +
+                ", creditScore=" + creditScore +
+                ", monthlyIncome=" + monthlyIncome +
+                ", monthlyDebt=" + monthlyDebt +
+                ", requestedAmount=" + requestedAmount +
+                ", dti=" + dti +
+                '}';
+    }
 }
 
