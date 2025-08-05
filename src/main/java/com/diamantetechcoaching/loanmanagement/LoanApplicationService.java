@@ -34,45 +34,37 @@ public class LoanApplicationService {
     }
 
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int creditScore, Consumer<LoanEntity> saveToDatabase) {
-        String firstName = request.getFirstName();
-        String lastName = request.getLastName();
-        double monthlyIncome = request.getMonthlyIncome();
-        double monthlyDebt = request.getMonthlyDebt();
-        double loanAmount = request.getRequestedAmount();
-
-        double debtToIncomeRatio = (monthlyDebt / monthlyIncome) * 100;
-        boolean creditOk = creditScore >= 750;
-        boolean dtiOk = debtToIncomeRatio <= 35;
-        boolean amountOk = loanAmount <= monthlyIncome * 4;
-
         String status = "Rejected";
-
-        if (creditOk && dtiOk && amountOk) {
+        if (creditScore >= 750 && calculateDebtToIncomeRatio(request) <= 35 && request.getRequestedAmount() <= request.getMonthlyIncome() * 4) {
             status = "Approved";
         }
 
         LoanApplicationResponse response = new LoanApplicationResponse(
                 status,
                 creditScore,
-                monthlyIncome,
-                monthlyDebt,
-                loanAmount,
-                debtToIncomeRatio
+                request.getMonthlyIncome(),
+                request.getMonthlyDebt(),
+                request.getRequestedAmount(),
+                calculateDebtToIncomeRatio(request)
         );
 
         LoanEntity entity = new LoanEntity();
-        entity.setFirstName(firstName);
-        entity.setLastName(lastName);
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
         entity.setCreditScore(creditScore);
-        entity.setMonthlyIncome(BigDecimal.valueOf(monthlyIncome));
-        entity.setMonthlyDebt(BigDecimal.valueOf(monthlyDebt));
-        entity.setRequestedAmount(BigDecimal.valueOf(loanAmount));
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(debtToIncomeRatio));
+        entity.setMonthlyIncome(BigDecimal.valueOf(request.getMonthlyIncome()));
+        entity.setMonthlyDebt(BigDecimal.valueOf(request.getMonthlyDebt()));
+        entity.setRequestedAmount(BigDecimal.valueOf(request.getRequestedAmount()));
+        entity.setDebtToIncomeRatio(BigDecimal.valueOf(calculateDebtToIncomeRatio(request)));
         entity.setApplicationStatus(status);
         entity.setSubmissionTimestamp(LocalDateTime.now());
 
         saveToDatabase.accept(entity);
 
         return response;
+    }
+
+    private static double calculateDebtToIncomeRatio(LoanApplicationRequest request) {
+        return (request.getMonthlyDebt() / request.getMonthlyIncome()) * 100;
     }
 }
