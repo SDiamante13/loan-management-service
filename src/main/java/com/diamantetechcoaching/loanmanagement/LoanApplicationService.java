@@ -42,7 +42,7 @@ public class LoanApplicationService {
         String ssn = request.getSsn(); // Social Security Number
         
         // Fetch credit score using the SSN
-        int credit = AlmanacService.fetchCreditScore(ssn); // This calls an external service
+        int credit = AlmanacService.getInstance().fetchCreditScore(ssn); // This calls an external service
         
         // Get first name from request
         String firstName = request.getFirstName(); // Customer's first name
