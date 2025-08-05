@@ -21,7 +21,7 @@ public record LoanApplication(String firstName, String lastName, CreditScore cre
     }
 
     public LoanStatus determineLoanStatus() {
-        if (creditScore.isApproved() && calculateDebtToIncomeRatio() <= 35 && requestedAmount() <= monthlyIncome() * 4) {
+        if (creditScore.isApproved() && debtToIncomeRatio().isApproved() && requestedAmount() <= monthlyIncome() * 4) {
             return LoanStatus.APPROVED;
         }
         return LoanStatus.REJECTED;
@@ -34,7 +34,7 @@ public record LoanApplication(String firstName, String lastName, CreditScore cre
                 monthlyIncome(),
                 monthlyDebt(),
                 requestedAmount(),
-                calculateDebtToIncomeRatio()
+                debtToIncomeRatio().value()
         );
     }
 
@@ -46,13 +46,13 @@ public record LoanApplication(String firstName, String lastName, CreditScore cre
         entity.setMonthlyIncome(BigDecimal.valueOf(monthlyIncome()));
         entity.setMonthlyDebt(BigDecimal.valueOf(monthlyDebt()));
         entity.setRequestedAmount(BigDecimal.valueOf(requestedAmount()));
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(calculateDebtToIncomeRatio()));
+        entity.setDebtToIncomeRatio(BigDecimal.valueOf(debtToIncomeRatio().value()));
         entity.setApplicationStatus(loanStatus.status());
         entity.setSubmissionTimestamp(LocalDateTime.now());
         return entity;
     }
 
-    public double calculateDebtToIncomeRatio() {
-        return (monthlyDebt() / monthlyIncome()) * 100;
+    private DebtToIncomeRatio debtToIncomeRatio() {
+        return new DebtToIncomeRatio(monthlyDebt, monthlyIncome);
     }
 }
