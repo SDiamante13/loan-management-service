@@ -14,16 +14,39 @@ class LoanApplicationServiceTest {
     @Test
     void rejectedLoans() {
         LoanApplicationResponse lowCreditScore = loanApplicationService.processLoanApplication(new LoanApplicationRequest(
-                "Bruce",
-                "Banner",
+                "first",
+                "last",
                 5_000,
                 1_500,
                 18_000,
                 "999"
         ), 700, loanEntity -> {
         });
+        LoanApplicationResponse highDebtToIncomeRatio = loanApplicationService.processLoanApplication(new LoanApplicationRequest(
+                "first",
+                "last",
+                5_000,
+                10_000,
+                18000,
+                "999"
+        ), 750, loanEntity -> {
+        });
+        LoanApplicationResponse loanAmountTooHigh = loanApplicationService.processLoanApplication(new LoanApplicationRequest(
+                "first",
+                "last",
+                5_000,
+                1_500,
+                200_000,
+                "999"
+        ), 750, loanEntity -> {
+        });
 
-        Approvals.verify(lowCreditScore);
+        Approvals.verifyAll("Rejected Loans",
+                new LoanApplicationResponse[]{
+                        lowCreditScore,
+                        highDebtToIncomeRatio,
+                        loanAmountTooHigh
+                });
     }
 
     @Test
