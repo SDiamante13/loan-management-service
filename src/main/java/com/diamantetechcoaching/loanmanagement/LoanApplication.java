@@ -18,6 +18,13 @@ record LoanApplication(String firstName, String lastName, int creditScore, doubl
                 request.getSsn());
     }
 
+    String determineLoanStatus(int creditScore) {
+        if (creditScore >= 750 && calculateDebtToIncomeRatio() <= 35 && requestedAmount() <= monthlyIncome() * 4) {
+            return "Approved";
+        }
+        return "Rejected";
+    }
+
     LoanApplicationResponse toLoanApplicationResponse(int creditScore, String status) {
         return new LoanApplicationResponse(
                 status,

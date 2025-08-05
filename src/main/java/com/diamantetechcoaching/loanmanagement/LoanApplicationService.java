@@ -34,10 +34,7 @@ public class LoanApplicationService {
     LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int creditScore, Consumer<LoanEntity> saveToDatabase) {
         LoanApplication loanApplication = LoanApplication.of(request, creditScore);
 
-        String status = "Rejected";
-        if (creditScore >= 750 && loanApplication.calculateDebtToIncomeRatio() <= 35 && loanApplication.requestedAmount() <= loanApplication.monthlyIncome() * 4) {
-            status = "Approved";
-        }
+        String status = loanApplication.determineLoanStatus(creditScore);
 
         LoanApplicationResponse response = loanApplication.toLoanApplicationResponse(creditScore, status);
         LoanEntity entity = loanApplication.toLoanEntity(creditScore, status);
