@@ -21,7 +21,7 @@ public record LoanApplication(String firstName, String lastName, CreditScore cre
     }
 
     public LoanStatus determineLoanStatus() {
-        if (creditScore.isApproved() && debtToIncomeRatio().isApproved() && requestedAmount() <= monthlyIncome() * 4) {
+        if (creditScore.isApproved() && debtToIncomeRatio().isApproved() && loanToIncomeRatio().isApproved()) {
             return LoanStatus.APPROVED;
         }
         return LoanStatus.REJECTED;
@@ -54,5 +54,9 @@ public record LoanApplication(String firstName, String lastName, CreditScore cre
 
     private DebtToIncomeRatio debtToIncomeRatio() {
         return new DebtToIncomeRatio(monthlyDebt, monthlyIncome);
+    }
+
+    private LoanToIncomeRatio loanToIncomeRatio() {
+        return new LoanToIncomeRatio(requestedAmount, monthlyIncome);
     }
 }
