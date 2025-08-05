@@ -22,10 +22,10 @@ public class LoanApplicationService {
 
     public LoanApplicationResponse processLoanApplication(LoanApplicationRequest request) {
         String ssn = request.getSsn();
-        int credit = AlmanacService.getInstance().fetchCreditScore(ssn);
-        return processLoanApplication(request, credit, entity1 -> {
+        int creditScore = AlmanacService.getInstance().fetchCreditScore(ssn);
+        return processLoanApplication(request, creditScore, entity -> {
             try {
-                loanApplicationRepository.save(entity1);
+                loanApplicationRepository.save(entity);
             } catch (Exception e) {
                 log.error("Failed to persist loan application: {}", e.getMessage());
                 throw new RuntimeException("Database error", e);
@@ -33,17 +33,17 @@ public class LoanApplicationService {
         });
     }
 
-    LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int credit, Consumer<LoanEntity> saveToDatabase) {
+    LoanApplicationResponse processLoanApplication(LoanApplicationRequest request, int creditScore, Consumer<LoanEntity> saveToDatabase) {
         String firstName = request.getFirstName();
         String lastName = request.getLastName();
-        double income = request.getMonthlyIncome();
-        double debt = request.getMonthlyDebt();
+        double monthlyIncome = request.getMonthlyIncome();
+        double monthlyDebt = request.getMonthlyDebt();
         double loanAmount = request.getRequestedAmount();
 
-        double dti = (debt / income) * 100;
-        boolean creditOk = credit >= 750;
-        boolean dtiOk = dti <= 35;
-        boolean amountOk = loanAmount <= income * 4;
+        double debtToIncomeRatio = (monthlyDebt / monthlyIncome) * 100;
+        boolean creditOk = creditScore >= 750;
+        boolean dtiOk = debtToIncomeRatio <= 35;
+        boolean amountOk = loanAmount <= monthlyIncome * 4;
 
         String status = "Rejected";
 
@@ -53,21 +53,21 @@ public class LoanApplicationService {
 
         LoanApplicationResponse response = new LoanApplicationResponse(
                 status,
-                credit,
-                income,
-                debt,
+                creditScore,
+                monthlyIncome,
+                monthlyDebt,
                 loanAmount,
-                dti
+                debtToIncomeRatio
         );
 
         LoanEntity entity = new LoanEntity();
         entity.setFirstName(firstName);
         entity.setLastName(lastName);
-        entity.setCreditScore(credit);
-        entity.setMonthlyIncome(BigDecimal.valueOf(income));
-        entity.setMonthlyDebt(BigDecimal.valueOf(debt));
+        entity.setCreditScore(creditScore);
+        entity.setMonthlyIncome(BigDecimal.valueOf(monthlyIncome));
+        entity.setMonthlyDebt(BigDecimal.valueOf(monthlyDebt));
         entity.setRequestedAmount(BigDecimal.valueOf(loanAmount));
-        entity.setDebtToIncomeRatio(BigDecimal.valueOf(dti));
+        entity.setDebtToIncomeRatio(BigDecimal.valueOf(debtToIncomeRatio));
         entity.setApplicationStatus(status);
         entity.setSubmissionTimestamp(LocalDateTime.now());
 
