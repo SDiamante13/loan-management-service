@@ -15,4 +15,8 @@ record LoanToIncomeRatio(double loanAmount, double monthlyIncome) {
     double value() {
         return loanAmount / monthlyIncome;
     }
+
+    public boolean needsReview() {
+        return value() > 4 && value() <= 10;
+    }
 }

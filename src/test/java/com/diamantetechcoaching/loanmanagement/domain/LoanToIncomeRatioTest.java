@@ -16,6 +16,14 @@ class LoanToIncomeRatioTest {
     }
 
     @Test
+    void needsReview() {
+        LoanToIncomeRatio loanToIncomeRatio = new LoanToIncomeRatio(100000, 18000);
+
+        assertThat(loanToIncomeRatio.value()).isStrictlyBetween(4.01, 10.01);
+        assertThat(loanToIncomeRatio.needsReview()).isTrue();
+    }
+
+    @Test
     void isNotApproved() {
         LoanToIncomeRatio loanToIncomeRatio = new LoanToIncomeRatio(500000, 30000);
 

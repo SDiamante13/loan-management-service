@@ -45,7 +45,7 @@ class LoanApplicationTest {
 
     @Test
     void needsManualReviewForLoan() {
-        LoanApplication needsManualReviewLoan = LoanApplication.of(new LoanApplicationRequest(
+        LoanApplication lowCreditScore = LoanApplication.of(new LoanApplicationRequest(
                 "Bruce",
                 "Banner",
                 5_000,
@@ -53,8 +53,27 @@ class LoanApplicationTest {
                 18_000,
                 "999"), 700
         );
+        LoanApplication highDebtToIncomeRatio = LoanApplication.of(new LoanApplicationRequest(
+                "Bruce",
+                "Banner",
+                4_000,
+                1_500,
+                18_000,
+                "999"), 750
+        );
 
-        assertThat(needsManualReviewLoan.determineLoanStatus()).isEqualTo(LoanStatus.NEEDS_REVIEW);
+        LoanApplication loanAmountTooHigh = LoanApplication.of(new LoanApplicationRequest(
+                "Bruce",
+                "Banner",
+                5_000,
+                1_500,
+                50_000,
+                "999"), 750
+        );
+
+        assertThat(lowCreditScore.determineLoanStatus()).isEqualTo(LoanStatus.NEEDS_REVIEW);
+        assertThat(highDebtToIncomeRatio.determineLoanStatus()).isEqualTo(LoanStatus.NEEDS_REVIEW);
+        assertThat(loanAmountTooHigh.determineLoanStatus()).isEqualTo(LoanStatus.NEEDS_REVIEW);
     }
 
     @Test

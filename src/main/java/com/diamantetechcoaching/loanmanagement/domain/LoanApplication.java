@@ -25,7 +25,7 @@ public record LoanApplication(String firstName, String lastName, CreditScore cre
         if (creditScore.isApproved() && debtToIncomeRatio().isApproved() && loanToIncomeRatio().isApproved()) {
             return LoanStatus.APPROVED;
         }
-        if (creditScore().needsReview()) {
+        if (creditScore.needsReview() || debtToIncomeRatio().needsReview() || loanToIncomeRatio().needsReview()) {
             return LoanStatus.NEEDS_REVIEW;
         }
         return LoanStatus.REJECTED;
