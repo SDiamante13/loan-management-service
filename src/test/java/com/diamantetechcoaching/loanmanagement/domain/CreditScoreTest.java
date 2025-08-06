@@ -15,6 +15,12 @@ class CreditScoreTest {
     }
 
     @Test
+    void needsReview() {
+        assertThat(new CreditScore(600).needsReview()).isTrue();
+        assertThat(new CreditScore(749).needsReview()).isTrue();
+    }
+
+    @Test
     void isNotApproved() {
         CreditScore creditScore = new CreditScore(749);
 

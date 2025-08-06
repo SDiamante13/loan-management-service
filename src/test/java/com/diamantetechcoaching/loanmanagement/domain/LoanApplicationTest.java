@@ -19,7 +19,7 @@ class LoanApplicationTest {
                 5_000,
                 1_500,
                 18_000,
-                "999"), 700
+                "999"), 599
         );
         LoanApplication highDebtToIncomeRatio = LoanApplication.of(new LoanApplicationRequest(
                 "first",
@@ -41,6 +41,20 @@ class LoanApplicationTest {
         assertThat(lowCreditScore.determineLoanStatus()).isEqualTo(LoanStatus.REJECTED);
         assertThat(highDebtToIncomeRatio.determineLoanStatus()).isEqualTo(LoanStatus.REJECTED);
         assertThat(loanAmountTooHigh.determineLoanStatus()).isEqualTo(LoanStatus.REJECTED);
+    }
+
+    @Test
+    void needsManualReviewForLoan() {
+        LoanApplication needsManualReviewLoan = LoanApplication.of(new LoanApplicationRequest(
+                "Bruce",
+                "Banner",
+                5_000,
+                1_500,
+                18_000,
+                "999"), 700
+        );
+
+        assertThat(needsManualReviewLoan.determineLoanStatus()).isEqualTo(LoanStatus.NEEDS_REVIEW);
     }
 
     @Test

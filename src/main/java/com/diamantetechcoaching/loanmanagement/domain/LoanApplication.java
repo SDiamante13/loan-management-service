@@ -7,7 +7,8 @@ import com.diamantetechcoaching.loanmanagement.entity.LoanEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record LoanApplication(String firstName, String lastName, CreditScore creditScore, double monthlyIncome, double monthlyDebt,
+public record LoanApplication(String firstName, String lastName, CreditScore creditScore, double monthlyIncome,
+                              double monthlyDebt,
                               double requestedAmount, String ssn) {
 
     public static LoanApplication of(LoanApplicationRequest request, int creditScore) {
@@ -23,6 +24,9 @@ public record LoanApplication(String firstName, String lastName, CreditScore cre
     public LoanStatus determineLoanStatus() {
         if (creditScore.isApproved() && debtToIncomeRatio().isApproved() && loanToIncomeRatio().isApproved()) {
             return LoanStatus.APPROVED;
+        }
+        if (creditScore().needsReview()) {
+            return LoanStatus.NEEDS_REVIEW;
         }
         return LoanStatus.REJECTED;
     }
